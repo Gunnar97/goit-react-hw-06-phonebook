@@ -3,23 +3,29 @@ import PropTypes from 'prop-types';
 import { ButtonForm, Form, Input, LabelForm } from './ContactFormStyled';
 
 export const ContactForm = ({ addContact }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    number: '',
-  });
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
   const handleOnInput = eve => {
-    setFormData({ ...formData, [eve.target.name]: eve.target.value });
+    switch (eve.target.name) {
+      case 'name':
+        setName(eve.target.value);
+        break;
+      case 'number':
+        setNumber(eve.target.value);
+        break;
+      default:
+        break;
+    }
   };
 
   const onSubmit = eve => {
-    const { name, number } = formData;
     eve.preventDefault();
     addContact({ name, number });
-    setFormData({ name: '', number: '' });
+    setName('');
+    setNumber('');
   };
 
-  const { name, number } = formData;
   return (
     <>
       <Form onSubmit={onSubmit}>

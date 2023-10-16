@@ -8,37 +8,38 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const App = () => {
-  const [formData, setFormData] = useState({
-    contacts: [],
-    filter: '',
-  });
+  const [contacts, setContacts] = useState([]);
+  const [filter, setFilter] = useState('');
+  // const [formData, setFormData] = useState({
+  //   contacts: [],
+  //   filter: '',
+  // });
 
   useEffect(() => {
     const storedContacts = JSON.parse(window.localStorage.getItem('Contacts'));
     if (storedContacts) {
-      setFormData(prevData => ({ ...prevData, contacts: storedContacts }));
+      setContacts(storedContacts);
+      // setFormData(prevData => ({ ...prevData, contacts: storedContacts }));
     }
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem('Contacts', JSON.stringify(formData.contacts));
-  }, [formData.contacts]);
+    window.localStorage.setItem('Contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
   const handleOnInput = eve => {
-    setFormData({ ...formData, [eve.target.name]: eve.target.value });
+    setFilter(eve.target.value);
   };
 
   const handleAddContact = ({ name, number }) => {
-    const contactInList = formData.contacts.some(
-      contact => contact.number === number
-    );
+    const contactInList = contacts.some(contact => contact.number === number);
 
     if (name && number) {
       if (!contactInList) {
-        setFormData(prev => ({
-          ...prev,
-          contacts: [...prev.contacts, { id: nanoid(), name, number }],
-        }));
+        setContacts(prevContacts => [
+          ...prevContacts,
+          { id: nanoid(), name, number },
+        ]);
         toast.success(`${name} was added to contacts`);
       } else {
         toast.error(`${name} is already exist in contacts`);
@@ -47,22 +48,21 @@ export const App = () => {
   };
 
   const handleDelContact = id => {
-    setFormData(prev => ({
-      ...prev,
-      contacts: [...prev.contacts.filter(contact => contact.id !== id)],
-    }));
-  };
-
-  const filterOfContacts = () => {
-    if (formData.filter.trim() === '') {
-      return formData.contacts;
-    }
-    return formData.contacts.filter(contact =>
-      contact.name.toLowerCase().includes(formData.filter.toLowerCase())
+    setContacts(prevContacts =>
+      prevContacts.filter(contact => contact.id !== id)
     );
   };
 
-  const { contacts, filter } = formData;
+  const filterOfContacts = () => {
+    if (filter.trim() === '') {
+      return contacts;
+    } else {
+      return contacts.filter(contact =>
+        contact.name.toLowerCase().includes(filter.toLowerCase())
+      );
+    }
+  };
+
   const filterData = filterOfContacts();
   return (
     <PhoneCard>
