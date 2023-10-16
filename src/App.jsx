@@ -1,34 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { nanoid } from 'nanoid';
 import { ContactForm } from 'components/ContactForm/ContactForm';
 import FilterByName from 'components/FilterByName/FilterByName';
 import ContactList from 'components/ContactList/ContactList';
 import { PhoneCard, Title, TitleMain } from 'AppStyled';
+import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { deleteContact, setContacts, setFilter } from 'redux/phonebookReducers';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
-  // const [formData, setFormData] = useState({
-  //   contacts: [],
-  //   filter: '',
-  // });
+  const contacts = useSelector(state => state.phonebook.contacts);
+  const filter = useSelector(state => state.phonebook.filter);
 
-  useEffect(() => {
-    const storedContacts = JSON.parse(window.localStorage.getItem('Contacts'));
-    if (storedContacts) {
-      setContacts(storedContacts);
-      // setFormData(prevData => ({ ...prevData, contacts: storedContacts }));
-    }
-  }, []);
-
-  useEffect(() => {
-    window.localStorage.setItem('Contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const dispatch = useDispatch();
 
   const handleOnInput = eve => {
-    setFilter(eve.target.value);
+    dispatch(setFilter(eve.target.value));
   };
 
   const handleAddContact = ({ name, number }) => {
@@ -36,10 +24,7 @@ export const App = () => {
 
     if (name && number) {
       if (!contactInList) {
-        setContacts(prevContacts => [
-          ...prevContacts,
-          { id: nanoid(), name, number },
-        ]);
+        dispatch(setContacts({ id: nanoid(), name, number }));
         toast.success(`${name} was added to contacts`);
       } else {
         toast.error(`${name} is already exist in contacts`);
@@ -48,19 +33,13 @@ export const App = () => {
   };
 
   const handleDelContact = id => {
-    setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== id)
-    );
+    dispatch(deleteContact(id));
   };
 
   const filterOfContacts = () => {
-    if (filter.trim() === '') {
-      return contacts;
-    } else {
-      return contacts.filter(contact =>
-        contact.name.toLowerCase().includes(filter.toLowerCase())
-      );
-    }
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
   };
 
   const filterData = filterOfContacts();
