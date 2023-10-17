@@ -11,7 +11,6 @@ import {
   REGISTER,
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { contactFormReducers } from './contactFormReducers';
 
 const phonebookPersistConfig = {
   key: 'contacts',
@@ -22,7 +21,6 @@ const phonebookPersistConfig = {
 export const store = configureStore({
   reducer: {
     phonebook: persistReducer(phonebookPersistConfig, phonebookReducers),
-    contactForm: contactFormReducers,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

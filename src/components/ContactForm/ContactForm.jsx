@@ -1,21 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ButtonForm, Form, Input, LabelForm } from './ContactFormStyled';
-import { useDispatch, useSelector } from 'react-redux';
-import { setName, setNumber } from 'redux/contactFormReducers';
 
 export const ContactForm = ({ addContact }) => {
-  const name = useSelector(state => state.contactForm.name);
-  const number = useSelector(state => state.contactForm.number);
-  const dispatch = useDispatch();
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
   const handleOnInput = eve => {
     switch (eve.target.name) {
       case 'name':
-        dispatch(setName(eve.target.value));
+        setName(eve.target.value);
         break;
       case 'number':
-        dispatch(setNumber(eve.target.value));
+        setNumber(eve.target.value);
         break;
       default:
         break;
@@ -25,8 +22,8 @@ export const ContactForm = ({ addContact }) => {
   const onSubmit = eve => {
     eve.preventDefault();
     addContact({ name, number });
-    dispatch(setName(''));
-    dispatch(setNumber(''));
+    setName('');
+    setNumber('');
   };
 
   return (
